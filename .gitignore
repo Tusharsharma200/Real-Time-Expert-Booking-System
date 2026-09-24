@@ -1,0 +1,37 @@
+# Presentations & Synopsis Documents
+*.pptx
+*.docx
+*.pdf
+test_*.pptx
+test_*.docx
+
+# Exclude compiled minified build assets
+assets/
+
+# Exclude unused pages & components from submission repo
+src/pages/AdminDashboard.jsx
+src/pages/StaffDashboard.jsx
+src/pages/InvoicesPage.jsx
+src/pages/Workspace.jsx
+src/pages/MessagesPage.jsx
+src/pages/ManageSchedule.jsx
+src/pages/ForgotPasswordPage.jsx
+src/pages/ResetPasswordPage.jsx
+src/pages/RegisterPage.jsx
+src/pages/LoginPage.jsx
+src/pages/ProviderDashboard.jsx
+src/pages/ProviderAnalytics.jsx
+src/components/ChatWindow.jsx
+src/components/NotificationCenter.jsx
+src/components/ClientNotesPanel.jsx
+
+# Environment & Dependencies
+node_modules/
+.env
+.env.*
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore & Filter Experts | BookingHub</title>
+  <meta name="description" content="Discover and filter verified mentors by domain, experience, and price. Real-Time Expert Session Booking System.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+</head>
+<body>
+
+  <!-- Main Navigation Header -->
+  <div id="navbar-mount"></div>
+
+  <!-- Main Content Container -->
+  <main class="page-container" id="main-content">
+
+    <!-- Page Title & Header -->
+    <header style="margin-bottom: 28px;">
+      <span class="section-badge">Verified Directory</span>
+      <h1 style="font-size: 2.3rem; margin-top: 6px;">Find Your Expert Mentor</h1>
+      <p style="color: var(--text-muted); font-size: 1.05rem;">
+        Filter verified industry specialists by technical domain, years of clinical/corporate experience, and budget.
+      </p>
+    </header>
+
+    <div class="search-layout">
+
+      <!-- Left Sidebar: Filters -->
+      <aside class="filter-sidebar" aria-label="Expert Filters">
+        <div class="filter-header">
+          <span class="filter-title">Filters</span>
+          <button type="button" class="reset-filter-btn" id="btn-reset-filters">Reset All</button>
+        </div>
+
+        <!-- Filter 1: Domain / Category -->
+        <div class="filter-group">
+          <h3 class="filter-group-title">Specialization Domain</h3>
+          <div class="category-radio-list" id="category-filter-list">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Filter 2: Minimum Experience -->
+        <div class="filter-group">
+          <h3 class="filter-group-title">Experience Level</h3>
+          <select class="form-select" id="select-experience" aria-label="Filter by Experience">
+            <option value="0">Any Experience</option>
+            <option value="5">5+ Years Experience</option>
+            <option value="10">10+ Years (Senior Lead)</option>
+            <option value="15">15+ Years (Director / Lead)</option>
+          </select>
+        </div>
+
+        <!-- Filter 3: Maximum Fee Slider -->
+        <div class="filter-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 class="filter-group-title" style="margin-bottom: 0;">Max Fee / Session</h3>
+            <span id="price-slider-value" style="font-weight: 700; color: var(--primary); font-size: 0.9rem;">₹2,500</span>
+          </div>
+          <input 
+            type="range" 
+            id="price-range-slider" 
+            min="500" 
+            max="2500" 
+            step="100" 
+            value="2500" 
+            style="width: 100%; cursor: pointer; accent-color: var(--primary);"
+            aria-label="Filter by maximum fee"
+          >
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+            <span>₹500</span>
+            <span>₹2,500</span>
+          </div>
+        </div>
+
+        <!-- Trust Note Box -->
+        <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-top: 24px; font-size: 0.82rem; color: var(--text-muted);">
+          <strong style="color: var(--text-main); display: block; margin-bottom: 4px;">Verified Mentors:</strong>
+          Every consultant undergoes profile verification, credential checks, and background assessment before listing.
+        </div>
+      </aside>
+
+      <!-- Right Main Content: Search Input + Results -->
+      <section class="search-results-wrapper" aria-label="Search Results">
+
+        <!-- Top Search & Sort Bar -->
+        <div class="search-controls-top">
+          <div class="search-input-field">
+            <span class="search-icon-pos">🔍</span>
+            <input 
+              type="text" 
+              id="main-search-input" 
+              placeholder="Search by mentor name, skill, company (e.g. AWS, Apollo, Legal)..." 
+              aria-label="Search experts"
+            >
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="results-meta" id="results-count-label">Showing 6 verified experts</span>
+            <select class="form-select" id="select-sort" style="width: auto; min-width: 170px;" aria-label="Sort Results">
+              <option value="rating">Top Rated ⭐</option>
+              <option value="exp">Most Experienced</option>
+              <option value="price-asc">Fee: Low to High</option>
+              <option value="price-desc">Fee: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Expert Cards Grid -->
+        <div class="experts-grid" id="search-experts-grid">
+          <!-- Rendered via JavaScript -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="no-results-state" style="display: none; text-align: center; padding: 60px 20px; background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg);">
+          <div style="font-size: 3rem; margin-bottom: 12px;">🔍</div>
+          <h3 style="font-size: 1.3rem; margin-bottom: 6px;">No Experts Found Matching Criteria</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
+            Try adjusting your search keywords, lowering the experience requirement, or raising the fee slider.
+          </p>
+          <button type="button" class="btn btn-primary" id="btn-clear-empty-search">
+            Clear All Filters
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Common Semantic Footer -->
+  <div id="footer-mount"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMainNavbar('search');
+      renderFooter();
+
+      // State
+      let currentCategory = 'all';
+      let currentSearchQuery = '';
+      let currentMinExp = 0;
+      let currentMaxPrice = 2500;
+      let currentSort = 'rating';
+
+      // Parse URL parameters if arriving from Home page or quick link
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('category')) {
+        currentCategory = urlParams.get('category');
+      }
+      if (urlParams.get('query')) {
+        currentSearchQuery = urlParams.get('query');
+        document.getElementById('main-search-input').value = currentSearchQuery;
+      }
+
+      // Render Category Radios
+      const catListEl = document.getElementById('category-filter-list');
+      if (catListEl) {
+        catListEl.innerHTML = MOCK_CATEGORIES.map(cat => `
+          <div 
+            class="category-radio-item ${cat.id === currentCategory ? 'active' : ''}" 
+            data-cat-id="${cat.id}"
+            id="filter-cat-${cat.id}"
+          >
+            <span>${cat.icon}</span>
+            <span>${cat.name}</span>
+          </div>
+        `).join('');
+
+        // Category click handlers
+        catListEl.querySelectorAll('.category-radio-item').forEach(item => {
+          item.addEventListener('click', () => {
+            catListEl.querySelectorAll('.category-radio-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            currentCategory = item.getAttribute('data-cat-id');
+            applyFilters();
+          });
+        });
+      }
+
+      // DOM Elements
+      const searchInput = document.getElementById('main-search-input');
+      const expSelect = document.getElementById('select-experience');
+      const sortSelect = document.getElementById('select-sort');
+      const priceSlider = document.getElementById('price-range-slider');
+      const priceSliderVal = document.getElementById('price-slider-value');
+      const resetBtn = document.getElementById('btn-reset-filters');
+      const clearEmptyBtn = document.getElementById('btn-clear-empty-search');
+      const gridEl = document.getElementById('search-experts-grid');
+      const noResultsEl = document.getElementById('no-results-state');
+      const countLabel = document.getElementById('results-count-label');
+
+      // Filter Application Function
+      function applyFilters() {
+        let results = [...MOCK_EXPERTS];
+
+        // 1. Category Filter
+        if (currentCategory && currentCategory !== 'all') {
+          results = results.filter(exp => exp.category === currentCategory);
+        }
+
+        // 2. Keyword Search
+        if (currentSearchQuery.trim() !== '') {
+          const q = currentSearchQuery.toLowerCase();
+          results = results.filter(exp => 
+            exp.name.toLowerCase().includes(q) ||
+            exp.title.toLowerCase().includes(q) ||
+            exp.organization.toLowerCase().includes(q) ||
+            exp.specialties.some(s => s.toLowerCase().includes(q)) ||
+            exp.bio.toLowerCase().includes(q)
+          );
+        }
+
+        // 3. Minimum Experience
+        if (currentMinExp > 0) {
+          results = results.filter(exp => exp.experienceYears >= currentMinExp);
+        }
+
+        // 4. Maximum Fee Slider
+        results = results.filter(exp => exp.hourlyRate <= currentMaxPrice);
+
+        // 5. Sorting
+        if (currentSort === 'rating') {
+          results.sort((a, b) => b.rating - a.rating);
+        } else if (currentSort === 'exp') {
+          results.sort((a, b) => b.experienceYears - a.experienceYears);
+        } else if (currentSort === 'price-asc') {
+          results.sort((a, b) => a.hourlyRate - b.hourlyRate);
+        } else if (currentSort === 'price-desc') {
+          results.sort((a, b) => b.hourlyRate - a.hourlyRate);
+        }
+
+        // Render Results
+        renderSearchResults(results);
+      }
+
+      function renderSearchResults(items) {
+        countLabel.textContent = `Showing ${items.length} verified ${items.length === 1 ? 'expert' : 'experts'}`;
+
+        if (items.length === 0) {
+          gridEl.style.display = 'none';
+          noResultsEl.style.display = 'block';
+          return;
+        }
+
+        gridEl.style.display = 'grid';
+        noResultsEl.style.display = 'none';
+
+        gridEl.innerHTML = items.map(exp => `
+          <article class="expert-card" id="expert-card-${exp.id}">
+            <div class="card-top-banner">
+              <img src="${exp.avatar}" alt="${exp.name}" class="expert-photo" loading="lazy">
+              <div class="expert-headline">
+                <span class="expert-category-badge">${exp.categoryLabel}</span>
+                <h3 class="expert-name">
+                  ${exp.name} <span class="verified-icon" title="Verified Expert">✓</span>
+                </h3>
+                <p class="expert-title">${exp.title}</p>
+                <div style="font-size: 0.75rem; color: #64748B; margin-top: 3px;">📍 ${exp.organization}</div>
+              </div>
+            </div>
+
+            <div class="card-body-section">
+              <div class="rating-row">
+                <div class="star-score">⭐ ${exp.rating}</div>
+                <div class="exp-years">(${exp.reviewsCount} reviews) · ${exp.experienceYears} yrs exp</div>
+              </div>
+              <p class="expert-bio-preview">${exp.bio}</p>
+              <div class="specialties-tags">
+                ${exp.specialties.map(s => `<span class="specialty-pill">${s}</span>`).join('')}
+              </div>
+            </div>
+
+            <div class="card-footer-strip">
+              <div class="price-tag">
+                <span class="price-num">₹${exp.hourlyRate}</span>
+                <span class="price-label">${exp.mode}</span>
+              </div>
+              <a href="booking.html?id=${exp.id}" class="btn btn-primary btn-sm" id="book-btn-${exp.id}">
+                Book Slot →
+              </a>
+            </div>
+          </article>
+        `).join('');
+      }
+
+      // Event Listeners
+      searchInput.addEventListener('input', (e) => {
+        currentSearchQuery = e.target.value;
+        applyFilters();
+      });
+
+      expSelect.addEventListener('change', (e) => {
+        currentMinExp = parseInt(e.target.value, 10);
+        applyFilters();
+      });
+
+      sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        applyFilters();
+      });
+
+      priceSlider.addEventListener('input', (e) => {
+        currentMaxPrice = parseInt(e.target.value, 10);
+        priceSliderVal.textContent = '₹' + currentMaxPrice.toLocaleString('en-IN');
+        applyFilters();
+      });
+
+      function resetAll() {
+        currentCategory = 'all';
+        currentSearchQuery = '';
+        currentMinExp = 0;
+        currentMaxPrice = 2500;
+        currentSort = 'rating';
+
+        searchInput.value = '';
+        expSelect.value = '0';
+        sortSelect.value = 'rating';
+        priceSlider.value = '2500';
+        priceSliderVal.textContent = '₹2,500';
+
+        if (catListEl) {
+          catListEl.querySelectorAll('.category-radio-item').forEach(i => {
+            if (i.getAttribute('data-cat-id') === 'all') i.classList.add('active');
+            else i.classList.remove('active');
+          });
+        }
+
+        applyFilters();
+        showToast('Filters reset successfully', 'info');
+      }
+
+      resetBtn.addEventListener('click', resetAll);
+      clearEmptyBtn.addEventListener('click', resetAll);
+
+      // Initial Render
+      applyFilters();
+    });
+  </script>
+</body>
+</html>

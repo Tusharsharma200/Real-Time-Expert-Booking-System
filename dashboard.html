@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings & Consultations | BookingHub</title>
+  <meta name="description" content="Personalized consultation dashboard with session passes, meeting links, and booking management. Real-Time Expert Session Booking System.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+
+  <!-- Main Navigation Header -->
+  <div id="navbar-mount"></div>
+
+  <!-- Main Dashboard Container -->
+  <main class="page-container" id="main-content">
+
+    <!-- Dashboard Hero Header -->
+    <header class="dashboard-hero-header">
+      <div class="dash-user-meta">
+        <span style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); text-transform: uppercase;">
+          CLIENT DASHBOARD
+        </span>
+        <h1 style="margin-top: 10px;">Welcome Back, Vrinda Jindal</h1>
+        <p>Manage your upcoming 1:1 expert consultations, review past discussions, and join video meeting rooms.</p>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <a href="search.html" class="btn btn-primary" style="background: white; color: var(--primary); box-shadow: var(--shadow-md);">
+          + Book New Consultation
+        </a>
+      </div>
+    </header>
+
+    <!-- 4 Key Performance Metric KPI Cards -->
+    <section class="dash-kpis-grid" aria-label="Consultation Metrics">
+      <div class="kpi-card card-hover">
+        <div class="kpi-icon-bubble blue">📅</div>
+        <div class="kpi-info-col">
+          <span class="kpi-val" id="kpi-total-bookings">3</span>
+          <span class="kpi-label">Total Bookings</span>
+        </div>
+      </div>
+
+      <div class="kpi-card card-hover">
+        <div class="kpi-icon-bubble green">🟢</div>
+        <div class="kpi-info-col">
+          <span class="kpi-val" id="kpi-upcoming-bookings">2</span>
+          <span class="kpi-label">Upcoming Sessions</span>
+        </div>
+      </div>
+
+      <div class="kpi-card card-hover">
+        <div class="kpi-icon-bubble purple">🎓</div>
+        <div class="kpi-info-col">
+          <span class="kpi-val" id="kpi-completed-bookings">1</span>
+          <span class="kpi-label">Completed Consultations</span>
+        </div>
+      </div>
+
+      <div class="kpi-card card-hover">
+        <div class="kpi-icon-bubble amber">⏱️</div>
+        <div class="kpi-info-col">
+          <span class="kpi-val" id="kpi-hours-learned">3.5 hrs</span>
+          <span class="kpi-label">Hours Mentored</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Filter Tabs & Booking Management -->
+    <section aria-label="Booking Appointments">
+      <div class="dashboard-tabs-bar">
+        <div class="tabs-group" id="dashboard-status-tabs">
+          <button type="button" class="tab-btn active" data-tab="all" id="tab-all">All Bookings</button>
+          <button type="button" class="tab-btn" data-tab="Confirmed" id="tab-upcoming">Upcoming (Confirmed)</button>
+          <button type="button" class="tab-btn" data-tab="Completed" id="tab-completed">Completed</button>
+          <button type="button" class="tab-btn" data-tab="Cancelled" id="tab-cancelled">Cancelled</button>
+        </div>
+
+        <div style="font-size: 0.88rem; color: var(--text-muted); font-weight: 600;" id="tab-count-label">
+          Showing 3 sessions
+        </div>
+      </div>
+
+      <!-- Bookings Session Cards List -->
+      <div class="bookings-list" id="bookings-list-container">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="no-bookings-state" style="display: none; text-align: center; padding: 60px 20px; background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg);">
+        <div style="font-size: 3rem; margin-bottom: 12px;">🗓️</div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">No Bookings Found in This View</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
+          You haven't scheduled any consultations under this status.
+        </p>
+        <a href="search.html" class="btn btn-primary">
+          Explore Mentors & Book Slot
+        </a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Common Semantic Footer -->
+  <div id="footer-mount"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMainNavbar('dashboard');
+      renderFooter();
+
+      let currentTab = 'all';
+
+      // KPI Elements
+      const totalKpiEl = document.getElementById('kpi-total-bookings');
+      const upcomingKpiEl = document.getElementById('kpi-upcoming-bookings');
+      const completedKpiEl = document.getElementById('kpi-completed-bookings');
+      const hoursKpiEl = document.getElementById('kpi-hours-learned');
+      const listContainer = document.getElementById('bookings-list-container');
+      const emptyStateEl = document.getElementById('no-bookings-state');
+      const tabCountLabel = document.getElementById('tab-count-label');
+
+      function updateDashboardView() {
+        const allBookings = getBookings();
+
+        // 1. Update KPIs
+        const total = allBookings.length;
+        const upcoming = allBookings.filter(b => b.status === 'Confirmed').length;
+        const completed = allBookings.filter(b => b.status === 'Completed').length;
+        const hours = (upcoming * 1 + completed * 1.5).toFixed(1);
+
+        if (totalKpiEl) totalKpiEl.textContent = total;
+        if (upcomingKpiEl) upcomingKpiEl.textContent = upcoming;
+        if (completedKpiEl) completedKpiEl.textContent = completed;
+        if (hoursKpiEl) hoursKpiEl.textContent = `${hours} hrs`;
+
+        // 2. Filter bookings according to active tab
+        let filtered = allBookings;
+        if (currentTab !== 'all') {
+          filtered = allBookings.filter(b => b.status === currentTab);
+        }
+
+        tabCountLabel.textContent = `Showing ${filtered.length} ${filtered.length === 1 ? 'session' : 'sessions'}`;
+
+        if (filtered.length === 0) {
+          listContainer.style.display = 'none';
+          emptyStateEl.style.display = 'block';
+          return;
+        }
+
+        listContainer.style.display = 'flex';
+        emptyStateEl.style.display = 'none';
+
+        // 3. Render Session Cards
+        listContainer.innerHTML = filtered.map(b => {
+          const statusLower = b.status.toLowerCase();
+          const isConfirmed = b.status === 'Confirmed';
+          const isCompleted = b.status === 'Completed';
+
+          return `
+            <article class="booking-session-card" id="session-card-${b.id}">
+              <img src="${b.expertAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop'}" alt="${b.expertName}" class="session-expert-img">
+
+              <div class="session-expert-info">
+                <h3>${b.expertName}</h3>
+                <div class="session-service-name">${b.serviceTitle}</div>
+                <div class="session-id-tag">REF ID: <strong>${b.id}</strong> · Fee: ₹${b.price}</div>
+                <div style="font-size: 0.8rem; color: #64748B; margin-top: 4px;">
+                  <em>Topic: ${b.topic || 'General Discussion'}</em>
+                </div>
+              </div>
+
+              <div class="session-schedule-meta">
+                <div class="schedule-date">
+                  <span>📅</span> <span>${b.dateText}</span>
+                </div>
+                <div class="schedule-time">
+                  <span>⏰</span> <span>${b.timeSlot}</span>
+                </div>
+                <div style="margin-top: 6px;">
+                  <span class="session-status-badge ${statusLower}">
+                    ${isConfirmed ? '🟢 Confirmed' : (isCompleted ? '🔵 Completed' : '🔴 Cancelled')}
+                  </span>
+                </div>
+              </div>
+
+              <div class="session-actions-cell">
+                ${isConfirmed ? `
+                  <a href="${b.meetingLink}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" id="join-btn-${b.id}">
+                    🎥 Join Video Call
+                  </a>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="printBookingSlip('${b.id}')" id="slip-btn-${b.id}">
+                    🖨️ Download Pass
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="handleCancelBooking('${b.id}')" id="cancel-btn-${b.id}">
+                    Cancel Session
+                  </button>
+                ` : (isCompleted ? `
+                  <button type="button" class="btn btn-outline btn-sm" onclick="printBookingSlip('${b.id}')">
+                    🖨️ Session Summary
+                  </button>
+                  <span style="font-size: 0.78rem; color: #16A34A; font-weight: 700;">✓ Completed & Archived</span>
+                ` : `
+                  <span style="font-size: 0.78rem; color: #DC2626; font-weight: 700;">Slot Released</span>
+                  <a href="search.html" class="btn btn-outline btn-sm">Reschedule</a>
+                `)}
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      // Handle Cancel Booking Action
+      window.handleCancelBooking = function(bookingId) {
+        if (confirm(`Are you sure you want to cancel session ${bookingId}? The slot will be released back to the expert's available pool.`)) {
+          updateBookingStatus(bookingId, 'Cancelled');
+          showToast(`Session ${bookingId} has been cancelled.`, 'info');
+          updateDashboardView();
+        }
+      };
+
+      // Tab Click Handlers
+      document.querySelectorAll('#dashboard-status-tabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#dashboard-status-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentTab = btn.getAttribute('data-tab');
+          updateDashboardView();
+        });
+      });
+
+      // Initial Render
+      updateDashboardView();
+    });
+  </script>
+</body>
+</html>

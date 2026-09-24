@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Expert Consultation | BookingHub</title>
+  <meta name="description" content="Interactive calendar slot selection with client-side form validation for expert consultation booking. Real-Time Expert Session Booking System.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+</head>
+<body>
+
+  <!-- Main Navigation Header -->
+  <div id="navbar-mount"></div>
+
+  <!-- Main Content Container -->
+  <main class="page-container" id="main-content">
+
+    <div class="booking-studio-grid">
+
+      <!-- Left Column: Expert Profile Dossier & Verified Credentials -->
+      <aside class="expert-profile-dossier" id="expert-dossier-col" aria-label="Mentor Dossier">
+        <!-- Rendered dynamically via JS based on ?id= -->
+      </aside>
+
+      <!-- Right Column: Interactive Booking Studio & Client-Side Validation Form -->
+      <section class="booking-studio-card" aria-label="Booking Studio">
+
+        <h2 style="font-size: 1.85rem; margin-bottom: 6px;">Schedule Your Session</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">
+          Choose your consultation package, select an available real-time time slot, and provide your session agenda.
+        </p>
+
+        <!-- Step 1: Select Service Package -->
+        <div class="studio-step-heading">
+          <span class="step-num-badge">1</span>
+          <span>Select Consultation Package</span>
+        </div>
+        <div class="services-picker" id="services-picker-container">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Step 2: Interactive Date Selector -->
+        <div class="studio-step-heading">
+          <span class="step-num-badge">2</span>
+          <span>Choose Date</span>
+        </div>
+        <div class="date-selector-row" id="date-selector-container">
+          <button type="button" class="date-pill-btn active" data-day="Today" id="date-btn-today">
+            <div class="day-title">Today</div>
+            <div class="date-num" id="date-today-label">Sep 24</div>
+          </button>
+          <button type="button" class="date-pill-btn" data-day="Tomorrow" id="date-btn-tomorrow">
+            <div class="day-title">Tomorrow</div>
+            <div class="date-num" id="date-tomorrow-label">Sep 25</div>
+          </button>
+          <button type="button" class="date-pill-btn" data-day="Day 3" id="date-btn-day3">
+            <div class="day-title" id="day3-weekday">Friday</div>
+            <div class="date-num" id="date-day3-label">Sep 26</div>
+          </button>
+        </div>
+
+        <!-- Step 3: Interactive Time Slots with 3 Visual States -->
+        <div class="studio-step-heading">
+          <span class="step-num-badge">3</span>
+          <span>Pick Visual Time Slot</span>
+        </div>
+
+        <!-- Legend for Slot Availability States -->
+        <div class="slots-legend">
+          <span class="legend-item"><span class="legend-dot available"></span> Available (Clickable)</span>
+          <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+          <span class="legend-item"><span class="legend-dot booked"></span> Booked / Locked</span>
+        </div>
+
+        <div class="time-slots-container" id="time-slots-grid">
+          <!-- Dynamic Time Slots Injected Here -->
+        </div>
+
+        <!-- Step 4: Client-Side Form Validation -->
+        <div class="booking-form-box">
+          <div class="studio-step-heading" style="margin-top: 0;">
+            <span class="step-num-badge">4</span>
+            <span>Your Details</span>
+          </div>
+
+          <form id="booking-validation-form" novalidate>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="client-name">Full Name <span class="req">*</span></label>
+                <input 
+                  type="text" 
+                  id="client-name" 
+                  class="form-control" 
+                  placeholder="e.g. Vrinda Jindal" 
+                  value="Vrinda Jindal"
+                  required
+                >
+                <span class="field-error-msg" id="err-client-name">Please enter your full name (minimum 3 characters).</span>
+              </div>
+
+              <div class="form-group">
+                <label for="client-email">Email Address <span class="req">*</span></label>
+                <input 
+                  type="email" 
+                  id="client-email" 
+                  class="form-control" 
+                  placeholder="name@example.com" 
+                  value="vrinda.jindal@example.com"
+                  required
+                >
+                <span class="field-error-msg" id="err-client-email">Please enter a valid email address.</span>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="client-phone">Contact Number <span class="req">*</span></label>
+                <input 
+                  type="tel" 
+                  id="client-phone" 
+                  class="form-control" 
+                  placeholder="10-digit mobile number" 
+                  value="9876543210"
+                  maxlength="10"
+                  required
+                >
+                <span class="field-error-msg" id="err-client-phone">Please enter a valid 10-digit mobile number.</span>
+              </div>
+
+              <div class="form-group">
+                <label for="client-mode">Preferred Meeting Platform</label>
+                <select id="client-mode" class="form-control">
+                  <option value="Google Meet">Google Meet (Auto-Generated Room)</option>
+                  <option value="Zoom Meeting">Zoom Video Room</option>
+                  <option value="Audio Call">High-Quality Audio Call</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="client-topic">Session Topic & Agenda Notes <span class="req">*</span></label>
+              <textarea 
+                id="client-topic" 
+                class="form-control" 
+                rows="3" 
+                placeholder="Briefly describe what you would like to discuss, code challenges, or architectural questions..."
+                required
+              >1:1 Discussion on system scalability, frontend performance tuning, and cloud architecture patterns.</textarea>
+              <span class="field-error-msg" id="err-client-topic">Please provide session agenda (minimum 10 characters).</span>
+            </div>
+
+            <!-- Booking Order Summary Strip -->
+            <div style="background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-weight: 700; color: var(--text-main); font-size: 1.05rem;">Total Consultation Fee:</span>
+                <span id="summary-price-display" style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">₹1,200</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted);">
+                <span>Scheduled Time: <strong id="summary-slot-display" style="color: var(--text-main);">Today · 04:00 PM - 05:00 PM</strong></span>
+                <span style="color: var(--success); font-weight: 700;">✓ Instant Pass Guaranteed</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block pulse-glow" id="btn-confirm-booking">
+              Confirm & Lock Session Slot →
+            </button>
+          </form>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Confirmation Pass Modal (Appears upon Successful Booking) -->
+  <div class="modal-backdrop" id="booking-success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-pass-title">
+    <div class="modal-pass-content">
+      <div class="modal-success-icon">✓</div>
+      <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">
+        BOOKING CONFIRMED
+      </div>
+      <h3 id="modal-pass-title" style="font-size: 1.6rem; margin: 8px 0 6px 0;">Consultation Booked Successfully!</h3>
+      <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 20px;">
+        Your slot has been locked and securely recorded into your dashboard.
+      </p>
+
+      <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; text-align: left; font-size: 0.88rem; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: var(--text-muted);">Booking Reference ID:</span>
+          <strong id="modal-booking-id" style="color: var(--primary);">BK-2026-9041</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: var(--text-muted);">Expert Specialist:</span>
+          <strong id="modal-expert-name">Rohan Verma</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="color: var(--text-muted);">Scheduled Date & Time:</span>
+          <strong id="modal-datetime-slot">Tomorrow · 04:00 PM</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted);">Google Meet Room:</span>
+          <span style="color: var(--primary); font-weight: 700;">Link Active on Dashboard</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <a href="dashboard.html" class="btn btn-primary" style="flex: 1;" id="modal-goto-dashboard">
+          Go to My Bookings →
+        </a>
+        <button type="button" class="btn btn-outline" id="modal-download-slip-btn">
+          Print Pass Slip 🖨️
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Common Semantic Footer -->
+  <div id="footer-mount"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMainNavbar('booking');
+      renderFooter();
+
+      // Determine selected expert from URL (default: exp-2 Rohan Verma or exp-1)
+      const urlParams = new URLSearchParams(window.location.search);
+      const expertId = urlParams.get('id') || 'exp-2';
+      const expert = MOCK_EXPERTS.find(e => e.id === expertId) || MOCK_EXPERTS[1];
+
+      // Booking State
+      let selectedService = expert.services[0];
+      let selectedDay = 'Today';
+      let selectedSlotTime = null;
+      let lastCreatedBooking = null;
+
+      // 1. Render Expert Dossier (Left Column)
+      const dossierEl = document.getElementById('expert-dossier-col');
+      if (dossierEl) {
+        dossierEl.innerHTML = `
+          <div class="dossier-hero">
+            <img src="${expert.avatar}" alt="${expert.name}" class="profile-avatar-xl">
+            <div>
+              <span class="expert-category-badge">${expert.categoryLabel}</span>
+              <h1 class="profile-name-lg">${expert.name} <span class="verified-icon">✓</span></h1>
+              <p style="font-size: 0.88rem; color: var(--text-muted);">${expert.title}</p>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #B45309; margin-top: 4px;">
+                ⭐ ${expert.rating} (${expert.reviewsCount} verified reviews)
+              </div>
+            </div>
+          </div>
+
+          <div class="credentials-box">
+            <div class="cred-item">
+              <span class="cred-label">Experience</span>
+              <span class="cred-val">${expert.experienceYears}+ Years</span>
+            </div>
+            <div class="cred-item">
+              <span class="cred-label">Location</span>
+              <span class="cred-val">${expert.location}</span>
+            </div>
+            <div class="cred-item">
+              <span class="cred-label">Consultation Mode</span>
+              <span class="cred-val">${expert.mode}</span>
+            </div>
+            <div class="cred-item">
+              <span class="cred-label">Affiliation</span>
+              <span class="cred-val">${expert.organization.split('/')[0]}</span>
+            </div>
+          </div>
+
+          <h3 class="profile-section-title">Professional Bio</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+            ${expert.bio}
+          </p>
+
+          <h3 class="profile-section-title">Verified Areas of Guidance</h3>
+          <div class="specialties-tags" style="margin-top: 8px;">
+            ${expert.specialties.map(s => `<span class="specialty-pill">${s}</span>`).join('')}
+          </div>
+
+          <h3 class="profile-section-title">Recent Client Reviews</h3>
+          <div class="reviews-mini-feed">
+            ${expert.reviews.map(r => `
+              <div class="review-mini-card">
+                <div style="display: flex; justify-content: space-between;">
+                  <span class="review-author">${r.user}</span>
+                  <span style="font-size: 0.75rem; color: #94A3B8;">${r.date}</span>
+                </div>
+                <div style="color: #F59E0B; font-size: 0.8rem; margin: 2px 0;">⭐⭐⭐⭐⭐</div>
+                <p class="review-comment">"${r.comment}"</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // 2. Render Services Options
+      const srvContainer = document.getElementById('services-picker-container');
+      if (srvContainer) {
+        srvContainer.innerHTML = expert.services.map((srv, idx) => `
+          <div 
+            class="service-card-choice ${idx === 0 ? 'active' : ''}" 
+            data-srv-id="${srv.id}"
+            id="service-choice-${srv.id}"
+          >
+            <div class="service-choice-meta">
+              <h4>${srv.title}</h4>
+              <p>${srv.desc}</p>
+            </div>
+            <div class="service-choice-price">
+              <div class="price-big">₹${srv.price}</div>
+              <div class="duration">${srv.duration}</div>
+            </div>
+          </div>
+        `).join('');
+
+        srvContainer.querySelectorAll('.service-card-choice').forEach(card => {
+          card.addEventListener('click', () => {
+            srvContainer.querySelectorAll('.service-card-choice').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            const sid = card.getAttribute('data-srv-id');
+            selectedService = expert.services.find(s => s.id === sid);
+            updateSummaryDisplay();
+          });
+        });
+      }
+
+      // 3. Render Available Time Slots for Current Day
+      function renderTimeSlots() {
+        const slotsGrid = document.getElementById('time-slots-grid');
+        const slotsList = expert.availableSlots[selectedDay] || [];
+
+        // Auto select first available slot if not selected
+        if (!selectedSlotTime) {
+          const firstAvail = slotsList.find(s => s.status === 'available');
+          if (firstAvail) selectedSlotTime = firstAvail.time;
+        }
+
+        slotsGrid.innerHTML = slotsList.map((slot, index) => {
+          const isSelected = slot.time === selectedSlotTime && slot.status === 'available';
+          const statusClass = slot.status === 'booked' 
+            ? 'status-booked' 
+            : (isSelected ? 'status-selected' : 'status-available');
+
+          const icon = slot.status === 'booked' ? '⚪' : (isSelected ? '🔵' : '🟢');
+          const badgeText = slot.status === 'booked' ? '(Booked)' : '';
+
+          return `
+            <button 
+              type="button" 
+              class="time-slot-btn ${statusClass}" 
+              data-slot-time="${slot.time}"
+              data-slot-status="${slot.status}"
+              ${slot.status === 'booked' ? 'disabled' : ''}
+              id="slot-btn-${index}"
+            >
+              <span>${icon}</span>
+              <span>${slot.time} ${badgeText}</span>
+            </button>
+          `;
+        }).join('');
+
+        // Attach Click to Available Slots
+        slotsGrid.querySelectorAll('.time-slot-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (btn.getAttribute('data-slot-status') === 'booked') return;
+            selectedSlotTime = btn.getAttribute('data-slot-time');
+            renderTimeSlots();
+            updateSummaryDisplay();
+          });
+        });
+      }
+
+      // Date Pills Click Handlers
+      document.querySelectorAll('.date-pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.date-pill-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedDay = btn.getAttribute('data-day');
+          selectedSlotTime = null;
+          renderTimeSlots();
+          updateSummaryDisplay();
+        });
+      });
+
+      // Update Order Summary Display
+      function updateSummaryDisplay() {
+        const priceEl = document.getElementById('summary-price-display');
+        const slotEl = document.getElementById('summary-slot-display');
+        if (priceEl && selectedService) {
+          priceEl.textContent = '₹' + selectedService.price.toLocaleString('en-IN');
+        }
+        if (slotEl) {
+          slotEl.textContent = `${selectedDay} · ${selectedSlotTime || 'Please select a slot'}`;
+        }
+      }
+
+      // 4. Form Validation & Submission
+      const form = document.getElementById('booking-validation-form');
+      const nameInput = document.getElementById('client-name');
+      const emailInput = document.getElementById('client-email');
+      const phoneInput = document.getElementById('client-phone');
+      const topicInput = document.getElementById('client-topic');
+      const modeSelect = document.getElementById('client-mode');
+
+      function validateField(inputEl, condition) {
+        if (!condition) {
+          inputEl.classList.add('is-invalid');
+          return false;
+        } else {
+          inputEl.classList.remove('is-invalid');
+          return true;
+        }
+      }
+
+      nameInput.addEventListener('input', () => validateField(nameInput, nameInput.value.trim().length >= 3));
+      emailInput.addEventListener('input', () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        validateField(emailInput, emailRegex.test(emailInput.value.trim()));
+      });
+      phoneInput.addEventListener('input', () => {
+        const phoneRegex = /^[0-9]{10}$/;
+        validateField(phoneInput, phoneRegex.test(phoneInput.value.trim()));
+      });
+      topicInput.addEventListener('input', () => validateField(topicInput, topicInput.value.trim().length >= 10));
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        if (!selectedSlotTime) {
+          showToast('Please select an available time slot above!', 'error');
+          return;
+        }
+
+        const isNameValid = validateField(nameInput, nameInput.value.trim().length >= 3);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmailValid = validateField(emailInput, emailRegex.test(emailInput.value.trim()));
+        const phoneRegex = /^[0-9]{10}$/;
+        const isPhoneValid = validateField(phoneInput, phoneRegex.test(phoneInput.value.trim()));
+        const isTopicValid = validateField(topicInput, topicInput.value.trim().length >= 10);
+
+        if (!isNameValid || !isEmailValid || !isPhoneValid || !isTopicValid) {
+          showToast('Please fix the highlighted validation errors.', 'error');
+          return;
+        }
+
+        const bookingPayload = {
+          expertId: expert.id,
+          expertName: expert.name,
+          expertTitle: expert.title,
+          expertAvatar: expert.avatar,
+          serviceTitle: selectedService.title,
+          dateText: selectedDay,
+          timeSlot: selectedSlotTime,
+          price: selectedService.price,
+          clientName: nameInput.value.trim(),
+          clientEmail: emailInput.value.trim(),
+          clientPhone: phoneInput.value.trim(),
+          topic: topicInput.value.trim(),
+          preferredMode: modeSelect.value
+        };
+
+        const confirmedBooking = createBooking(bookingPayload);
+        lastCreatedBooking = confirmedBooking;
+
+        showToast('Consultation Slot Reserved Successfully!', 'success');
+
+        // Populate Success Modal
+        document.getElementById('modal-booking-id').textContent = confirmedBooking.id;
+        document.getElementById('modal-expert-name').textContent = expert.name;
+        document.getElementById('modal-datetime-slot').textContent = `${selectedDay} · ${selectedSlotTime}`;
+        document.getElementById('booking-success-modal').classList.add('is-open');
+      });
+
+      // Modal Download Slip Button
+      document.getElementById('modal-download-slip-btn').addEventListener('click', () => {
+        if (lastCreatedBooking) {
+          printBookingSlip(lastCreatedBooking.id);
+        }
+      });
+
+      // Initial Renders
+      renderTimeSlots();
+      updateSummaryDisplay();
+    });
+  </script>
+</body>
+</html>
